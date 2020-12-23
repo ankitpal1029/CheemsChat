@@ -12,8 +12,23 @@ const io = socketio(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 //run when client connects
-io.on('connection', () => {
+io.on('connection', socket => {
     console.log('New Connection established .... ');
+    socket.emit('message',"welcome to chat");
+
+    //broadcast when user joins chat
+    socket.broadcast.emit('message','User has joined the chat');
+
+    //when someone disconnects
+    socket.on('disconnect', () => {
+        io.emit('message','user just rage quit the chat');
+    });
+
+    //Listen for chatmessage
+    socket.on('chatMessage',(msg) => {
+        console.log(msg);
+        io.emit('message',msg);
+    });
 });
 
 const PORT = 5000 || process.env.PORT;
