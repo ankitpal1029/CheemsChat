@@ -1,4 +1,4 @@
-const {userJoin ,getCurrentUser } = require('./utils/users');
+const {userJoin ,getCurrentUser ,userLeaves ,getRoomUsers} = require('./utils/users');
 const formatMessage = require('./utils/messages');
 
 const express = require('express');
@@ -30,6 +30,12 @@ io.on('connection', socket => {
         //broadcast when user joins chat
         socket.broadcast.to(user.room).emit('message',formatMessage(botName,`${user.username} has joined the chat`));
 
+        //update users in room
+        io.to(user.room).emit('roomusers',{
+            room: user.room,
+            users: getRoomUsers(user.room)
+        });
+
     });
 
 
@@ -43,7 +49,17 @@ io.on('connection', socket => {
 
     //when someone disconnects
     socket.on('disconnect', () => {
-        io.emit('message',formatMessage(botName,"user just rage quit the chat"));
+        const user = userLeaves(socket.id);
+        if(user){    
+            io.to(user.room).emit('message',formatMessage(botName,`${user.username} just rage quit the chat`));
+
+        //update users in room
+        io.to(user.room).emit('roomusers',{
+            room: user.room,
+            users: getRoomUsers(user.room)
+        });
+
+        }
     });
 });
 
