@@ -14,7 +14,6 @@ const botName = "Dank Memer";
 //setting static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use(express.static(path.join(__dirname, 'config')));
 
 //run when client connects
 io.on('connection', socket => {
@@ -25,9 +24,15 @@ io.on('connection', socket => {
         const user = userJoin(socket.id,username,room);
 
         socket.join(user.room);
+        if(user.room == "MemeShowdown"){
+            socket.emit('message',formatMessage(botName,"Submit all your memes and type !judgeme (and i will decide who is nomie)"));
+        }
 
-        console.log('New Connection established .... ');
-        socket.emit('message',formatMessage(botName,"welcome to chat"));
+        else{
+            console.log('New Connection established .... ');
+            socket.emit('message',formatMessage(botName,"welcome to chat"));
+        }
+
 
         //broadcast when user joins chat
         socket.broadcast.to(user.room).emit('message',formatMessage(botName,`${user.username} has joined the chat`));
@@ -47,6 +52,15 @@ io.on('connection', socket => {
         console.log(msg);
         io.to(user.room).emit('message',formatMessage(user.username,msg));
     });
+
+
+    //Listen for image transfers
+    socket.on('upload',(msg) => {
+        const user = getCurrentUser(socket.id);
+        console.log(`File name ${msg.fileName} recieved`);
+        io.to(user.room).emit('image',msg);
+
+    })
 
 
     //when someone disconnects

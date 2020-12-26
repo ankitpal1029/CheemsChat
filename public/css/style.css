@@ -189,6 +189,10 @@ a {
   height: 0;
 }
 
+.image-preview {
+  width: 30%;
+}
+
 @media (max-width: 700px) {
   .chat-main {
     display: block;
