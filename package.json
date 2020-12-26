@@ -5,12 +5,13 @@
   "main": "server.js",
   "scripts": {
     "start": "node server",
-    "dev" : "nodemon server"
+    "dev": "nodemon server"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "firebase": "^8.2.1",
     "moment": "^2.29.1",
     "socket.io": "^3.0.4"
   }

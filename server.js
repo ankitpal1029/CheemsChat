@@ -14,6 +14,8 @@ const botName = "Dank Memer";
 //setting static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+//app.use(express.static(path.join(__dirname, 'config')));
+
 //run when client connects
 io.on('connection', socket => {
 
@@ -62,7 +64,6 @@ io.on('connection', socket => {
         }
     });
 });
-
 const PORT = 5000 || process.env.PORT;
 
 server.listen(PORT, () => console.log(`Server running on ${PORT}`));   
