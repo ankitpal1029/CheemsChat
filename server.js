@@ -1,10 +1,13 @@
 const {userJoin ,getCurrentUser ,userLeaves ,getRoomUsers} = require('./utils/users');
 const formatMessage = require('./utils/messages');
+const formatImageMessage = require('./utils/images');
+
 
 const express = require('express');
 const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
+const { type } = require('os');
 
 const app = express();
 const server = http.createServer(app);
@@ -25,7 +28,7 @@ io.on('connection', socket => {
 
         socket.join(user.room);
         if(user.room == "MemeShowdown"){
-            socket.emit('message',formatMessage(botName,"Submit all your memes and type !judgeme (and i will decide who is nomie)"));
+            socket.emit('message',formatMessage(botName,"Sumbmit all your memes amd tympe !judgememe"));
         }
 
         else{
@@ -50,15 +53,25 @@ io.on('connection', socket => {
     socket.on('chatMessage',(msg) => {
         const user = getCurrentUser(socket.id);
         console.log(msg);
-        io.to(user.room).emit('message',formatMessage(user.username,msg));
+        var string1 = `!judgememe`;
+        if(!string1.localeCompare(msg)){
+            //const something = formatMessage(botName,"gimme a minute evaluating...");
+            io.to(user.room).emit('message',formatMessage(user.username,msg));
+            io.to(user.room).emit('message',formatMessage(botName,"gimme a minute evaluating..."));
+            io.to(user.room).emit('evaluate',formatMessage(user.username,"evaluate"));
+        }else{
+            io.to(user.room).emit('message',formatMessage(user.username,msg));
+        }
+        
     });
 
 
     //Listen for image transfers
     socket.on('upload',(msg) => {
         const user = getCurrentUser(socket.id);
-        console.log(`File name ${msg.fileName} recieved`);
-        io.to(user.room).emit('image',msg);
+        console.log(`File name recieved`);
+        console.log(typeof(msg));
+        io.to(user.room).emit('image',formatImageMessage(user.username,msg));
 
     })
 

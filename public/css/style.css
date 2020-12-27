@@ -189,8 +189,9 @@ a {
   height: 0;
 }
 
-.image-preview {
-  width: 30%;
+.imagePreview {
+  width: 500px;
+  height: 500px;
 }
 
 @media (max-width: 700px) {

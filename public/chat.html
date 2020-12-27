@@ -6,11 +6,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <link rel="stylesheet" href="css/style.css">
   <title>DankMemer</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+  <script src="https://unpkg.com/@microsoft/customvision-tfjs"></script>
 </head>
 <body>
   <div class="chat-container">
     <header class="chat-header">
-      <h1>DankMemer</h1>
+      <h1>CheemsMemer</h1>
       <a href="index.html" class="btn">Leave Room</a>
     </header>
     <main class="chat-main">
@@ -22,7 +24,6 @@
       </div>
       <div class="chat-messages">
       </div>
-      <div class="chat-images"></div>
     </main>
     <div class="chat-form-container">
       <form id="chat-form">
@@ -40,11 +41,14 @@
       </form>
     </div>
   </div>
-
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.4/qs.min.js" integrity="sha512-BHtomM5XDcUy7tDNcrcX1Eh0RogdWiMdXl3wJcKB3PFekXb3l5aDzymaTher61u6vEZySnoC/SAj2Y/p918Y3w==" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
 
   <!--script type="module" src="config/fbase.js"></script-->
+
   <script src="js/main.js"></script>
+
+  <!--script type="module" src="js/predict.js"></script-->
 </body>
 </html>

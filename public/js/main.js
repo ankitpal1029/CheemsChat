@@ -3,7 +3,20 @@ const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 const uploadImage = document.getElementById('image-upload');
-const chatImages = document.querySelector('.chat-images');
+
+
+
+async function predict (image){
+    var result;
+    let model = new cvstfjs.ClassificationModel();
+    await model.loadModelAsync('../cheems/model.json');
+    if(model){
+
+        result = await model.executeAsync(image);
+    }
+    console.log(result);
+}
+
 
 
 const socket = io();
@@ -27,14 +40,13 @@ function outputMessage (message){
     div.classList.add('message');
     console.log(message);
     div.innerHTML = `
-						<p class="meta">${message.user} <span>${message.time}</span></p>
+                    <p class="meta">	<span class="user">${message.user}</span> <span>${message.time}</span></p>
 						<p class="text">
                         ${message.text}
 						</p>`;
 
     document.querySelector('.chat-messages').appendChild(div);
-
-    //scroll to latest chat
+//scroll to latest chat
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
 }
@@ -42,11 +54,14 @@ function outputMessage (message){
 
 //rendering images
 function outputImage (msg){
-    console.log(msg);
-    const image = document.createElement('img');
-    image.src = msg;
-    image.classList.add('image-preview');
-    document.querySelector('.chat-messages').appendChild(image);
+    const div = document.createElement('div');
+    div.classList.add('message');
+
+    div.innerHTML = `
+                    <p class="meta">	<span class="user">${msg.user}</span> <span>${msg.time}</span></p>
+						<img class="imagePreview" src=${msg.image}>
+						`;
+    document.querySelector('.chat-messages').appendChild(div);
     
     //scroll to latest chat
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -77,12 +92,40 @@ socket.emit('joinRoom',{username,room});
 socket.on('message',message => {
     console.log('should get ');
     outputMessage(message);
+    if(message.text == "!judgememe"){
+        console.log('evaluation has started');
+    }
 });
 
 //Image from server
 socket.on('image', msg => {
     outputImage(msg);
 })
+
+//server evaluating message
+socket.on('evaluate',(message) => {
+    //outputMessage(message);
+   //prediction has to start
+    
+    const chatImages = document.getElementsByClassName('imagePreview');
+    console.log(chatImages[0].parentNode.childNodes[1].querySelector(".user").innerText);
+    if(chatImages.length < 1){
+        console.log('submit another meme');
+    }else{
+        var user = message.user;
+        var image;
+        const length = chatImages.length;
+        for(var i= length -1;i>0;i--){
+            if(user == chatImages[i].parentNode.childNodes[1].querySelector(".user").innerText){
+                image = chatImages[i];
+                break;
+            }
+        }
+        console.log(image);
+        predict(image) ;
+//evaaluate
+    }
+});
 
 //message submit
 
@@ -93,10 +136,10 @@ chatForm.addEventListener('submit', (e) => {
     const msg = e.target.elements.msg.value;
     //emitting to a server
     socket.emit('chatMessage',msg);
-
     //clear input
     e.target.elements.msg.value = '';
     e.target.elements.msg.focus();
+
 
 });
 
