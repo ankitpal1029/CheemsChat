@@ -5,7 +5,7 @@ const userList = document.getElementById('users');
 const uploadImage = document.getElementById('image-upload');
 
 
-
+//running tf.js on the image
 async function predict (image){
     var result;
     let model = new cvstfjs.ClassificationModel();
@@ -14,7 +14,41 @@ async function predict (image){
 
         result = await model.executeAsync(image);
     }
-    console.log(result);
+    //console.log(result);
+    return result;
+}
+
+
+//resizing image
+function resizeImage(base64Str, width=400, height=400) {
+  return new Promise((resolve) => {
+    let img = new Image()
+    img.src = base64Str
+    img.onload = () => {
+      let canvas = document.createElement('canvas')
+      /*const MAX_WIDTH = maxWidth
+      const MAX_HEIGHT = maxHeight
+      let width = img.width
+      let height = img.height
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width
+          width = MAX_WIDTH
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height
+          height = MAX_HEIGHT
+        }
+      }*/
+      canvas.width = width
+      canvas.height = height
+      let ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, width, height)
+      resolve(canvas.toDataURL())
+    }
+  })
 }
 
 
@@ -103,7 +137,7 @@ socket.on('image', msg => {
 })
 
 //server evaluating message
-socket.on('evaluate',(message) => {
+socket.on('evaluate',async (message) => {
     //outputMessage(message);
    //prediction has to start
     
@@ -115,14 +149,15 @@ socket.on('evaluate',(message) => {
         var user = message.user;
         var image;
         const length = chatImages.length;
-        for(var i= length -1;i>0;i--){
+        for(var i= length -1;i>=0;i--){
             if(user == chatImages[i].parentNode.childNodes[1].querySelector(".user").innerText){
                 image = chatImages[i];
                 break;
             }
         }
         console.log(image);
-        predict(image) ;
+        const result = await predict(image) ;
+        console.log(result);
 //evaaluate
     }
 });
@@ -144,7 +179,7 @@ chatForm.addEventListener('submit', (e) => {
 });
 
 // upload image
-uploadImage.addEventListener('change',(e) => {
+uploadImage.addEventListener('change',async (e) => {
     var data = e.target.files[0];
     //var reader = new FileReader();
     
@@ -153,9 +188,11 @@ uploadImage.addEventListener('change',(e) => {
         const reader = new FileReader();
 
         reader.addEventListener("load", function(){
-            socket.emit('upload',this.result);
+            resizeImage(this.result,400,400).then((result) => {
+            socket.emit('upload',result);
+            })
         });
-
+        
         reader.readAsDataURL(data)
     }
 });

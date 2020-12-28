@@ -71,6 +71,21 @@ io.on('connection', socket => {
         const user = getCurrentUser(socket.id);
         console.log(`File name recieved`);
         console.log(typeof(msg));
+        /*const png = sharp(msg)
+            .resize({width:400,height:400})
+            .png();
+        
+        console.log(typeof(buffer));
+
+        io.to(user.room).emit('image',formatImageMessage(user.username,buffer));
+            */
+
+            /*sharp(output1)
+                    .toBuffer()
+                    .then((outputBuffer) => {
+                        io.to(user.room).emit('image',formatImageMessage(user.username,outputBuffer));
+                    })
+                    */
         io.to(user.room).emit('image',formatImageMessage(user.username,msg));
 
     })
