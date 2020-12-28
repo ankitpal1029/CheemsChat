@@ -9,4 +9,6 @@ function formatMessage(user, text){
     
 }
 
+//function formatEvaluateMessage(user,text,userOrigin)
+
 module.exports = formatMessage;

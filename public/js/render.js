@@ -8,7 +8,7 @@ function outputImage (msg){
     div.classList.add('message');
 
     div.innerHTML = `
-                    <p class="meta">	<span class="user">${msg.user}</span> <span>${msg.time}</span></p>
+                    <p class="meta">	<span class="user">${msg.user}</span> <span>${moment().format('h:mm a')/*msg.time*/}</span></p>
 						<img class="imagePreview" src=${msg.image}>
 						`;
     document.querySelector('.chat-messages').appendChild(div);

@@ -50,18 +50,22 @@ socket.on('evaluate',async (message) => {
         console.log('upload an image first');
         socket.emit('errors',"ERROR_IMAGE_NOT_FOUND");
     }else{
+
         var user = message.user;
         var image;
         const length = chatImages.length;
-        for(var i= length -1;i>=0;i--){
-            if(user == chatImages[i].parentNode.childNodes[1].querySelector(".user").innerText){
-                image = chatImages[i];
-                break;
+
+        //checking if this is the user who requested !judgememe to prevent tf.js from running
+        if(user == username){
+
+            for(var i= length -1;i>=0;i--){
+                if(user == chatImages[i].parentNode.childNodes[1].querySelector(".user").innerText){
+                    image = chatImages[i];
+                    break;
+                }
             }
-        }
-        if(image){
             const result = await predict(image) ;
-            console.log(result);
+            console.log(result)
             socket.emit('result',result[0]);
         }
     }

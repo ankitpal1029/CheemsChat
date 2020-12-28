@@ -7,7 +7,6 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
-const { type } = require('os');
 
 const app = express();
 const server = http.createServer(app);
@@ -71,21 +70,6 @@ io.on('connection', socket => {
         const user = getCurrentUser(socket.id);
         console.log(`File name recieved`);
         console.log(typeof(msg));
-        /*const png = sharp(msg)
-            .resize({width:400,height:400})
-            .png();
-        
-        console.log(typeof(buffer));
-
-        io.to(user.room).emit('image',formatImageMessage(user.username,buffer));
-            */
-
-            /*sharp(output1)
-                    .toBuffer()
-                    .then((outputBuffer) => {
-                        io.to(user.room).emit('image',formatImageMessage(user.username,outputBuffer));
-                    })
-                    */
         io.to(user.room).emit('image',formatImageMessage(user.username,msg));
 
     });
