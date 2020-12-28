@@ -1,107 +1,14 @@
 const chatForm = document.getElementById('chat-form');
-const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
-const userList = document.getElementById('users');
 const uploadImage = document.getElementById('image-upload');
 
 
-//running tf.js on the image
-async function predict (image){
-    var result;
-    let model = new cvstfjs.ClassificationModel();
-    await model.loadModelAsync('../cheems/model.json');
-    if(model){
-
-        result = await model.executeAsync(image);
-    }
-    //console.log(result);
-    return result;
-}
-
-
-//resizing image
-function resizeImage(base64Str, width=400, height=400) {
-  return new Promise((resolve) => {
-    let img = new Image()
-    img.src = base64Str
-    img.onload = () => {
-      let canvas = document.createElement('canvas')
-      /*const MAX_WIDTH = maxWidth
-      const MAX_HEIGHT = maxHeight
-      let width = img.width
-      let height = img.height
-
-      if (width > height) {
-        if (width > MAX_WIDTH) {
-          height *= MAX_WIDTH / width
-          width = MAX_WIDTH
-        }
-      } else {
-        if (height > MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height
-          height = MAX_HEIGHT
-        }
-      }*/
-      canvas.width = width
-      canvas.height = height
-      let ctx = canvas.getContext('2d')
-      ctx.drawImage(img, 0, 0, width, height)
-      resolve(canvas.toDataURL())
-    }
-  })
-}
-
+import {predict} from './predict.js'
+import {resizeImage} from './utilfunc.js'
+import {outputImage,outputUsers,outputMessage,outputRoomName} from './render.js'
 
 
 const socket = io();
-//rendering room name
-function outputRoomName(room){
-    roomName.innerText = room;
-
-}
-
-//rendering users in chat names
-function outputUsers(users){
-    userList.innerHTML = `
-    ${users.map(user => `<li>${user.username}</li>`).join('')}
-    ` ;
-}
-
-
-//rendering text
-function outputMessage (message){
-    const div = document.createElement('div');
-    div.classList.add('message');
-    console.log(message);
-    div.innerHTML = `
-                    <p class="meta">	<span class="user">${message.user}</span> <span>${message.time}</span></p>
-						<p class="text">
-                        ${message.text}
-						</p>`;
-
-    document.querySelector('.chat-messages').appendChild(div);
-//scroll to latest chat
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-}
-
-
-//rendering images
-function outputImage (msg){
-    const div = document.createElement('div');
-    div.classList.add('message');
-
-    div.innerHTML = `
-                    <p class="meta">	<span class="user">${msg.user}</span> <span>${msg.time}</span></p>
-						<img class="imagePreview" src=${msg.image}>
-						`;
-    document.querySelector('.chat-messages').appendChild(div);
-    
-    //scroll to latest chat
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-}
-
 
 
 
@@ -138,7 +45,6 @@ socket.on('image', msg => {
 
 //server evaluating message
 socket.on('evaluate',async (message) => {
-    //outputMessage(message);
    //prediction has to start
     
     const chatImages = document.getElementsByClassName('imagePreview');
@@ -158,7 +64,7 @@ socket.on('evaluate',async (message) => {
         console.log(image);
         const result = await predict(image) ;
         console.log(result);
-//evaaluate
+
     }
 });
 
