@@ -2,7 +2,7 @@ const {userJoin ,getCurrentUser ,userLeaves ,getRoomUsers} = require('./utils/us
 const formatMessage = require('./utils/messages');
 const formatImageMessage = require('./utils/images');
 
-
+const process = require('process');
 const express = require('express');
 const path = require('path');
 const http = require('http');
@@ -13,7 +13,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const botName = "Dank Memer";
+const botName = "Damk Memer";
 //setting static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -28,7 +28,7 @@ io.on('connection', socket => {
 
         socket.join(user.room);
         if(user.room == "MemeShowdown"){
-            socket.emit('message',formatMessage(botName,"Sumbmit all your memes amd tympe !judgememe"));
+            socket.emit('message',formatMessage(botName,"Sumbmit your memes amd tympe !judgememe"));
         }
 
         else{
@@ -88,6 +88,20 @@ io.on('connection', socket => {
                     */
         io.to(user.room).emit('image',formatImageMessage(user.username,msg));
 
+    });
+
+    socket.on('result',(result) => {
+        console.log(result[0]);
+        const percent = result[0]*100;
+        const user = getCurrentUser(socket.id);
+        io.to(user.room).emit('message',formatMessage(botName,`${user.username} your meme is ${percent}% cheemsy`));
+    })
+
+    socket.on('errors',(msg) => {
+        const user = getCurrentUser(socket.id);
+        if(msg == "ERROR_IMAGE_NOT_FOUND"){
+            io.to(user.room).emit('message',formatMessage(botName,`${user.username} Pleams upload an image firmst`));
+        }
     })
 
 
@@ -106,6 +120,6 @@ io.on('connection', socket => {
         }
     });
 });
-const PORT = 5000 || process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => console.log(`Server running on ${PORT}`));   

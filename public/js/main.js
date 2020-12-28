@@ -1,7 +1,5 @@
 const chatForm = document.getElementById('chat-form');
-const roomName = document.getElementById('room-name');
 const uploadImage = document.getElementById('image-upload');
-
 
 import {predict} from './predict.js'
 import {resizeImage} from './utilfunc.js'
@@ -48,9 +46,9 @@ socket.on('evaluate',async (message) => {
    //prediction has to start
     
     const chatImages = document.getElementsByClassName('imagePreview');
-    console.log(chatImages[0].parentNode.childNodes[1].querySelector(".user").innerText);
     if(chatImages.length < 1){
-        console.log('submit another meme');
+        console.log('upload an image first');
+        socket.emit('errors',"ERROR_IMAGE_NOT_FOUND");
     }else{
         var user = message.user;
         var image;
@@ -61,14 +59,14 @@ socket.on('evaluate',async (message) => {
                 break;
             }
         }
-        console.log(image);
-        const result = await predict(image) ;
-        console.log(result);
-
+        if(image){
+            const result = await predict(image) ;
+            console.log(result);
+            socket.emit('result',result[0]);
+        }
     }
 });
 
-//message submit
 
 chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
