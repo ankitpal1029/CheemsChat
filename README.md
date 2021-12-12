@@ -2,7 +2,7 @@
 
 ## Check out the hosted link on heroku (might not work all the time cause free tier)
 
-https://powerful-meadow-29857.herokuapp.com/
+https://cheems-or-not.herokuapp.com/
 
 This is a Chat app with two rooms (Memeshowdown and General)
 
